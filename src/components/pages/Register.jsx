@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { signUp, isAuthenticated } = useAuth();
+  const { signUp, isAuthenticated, errors: registerErrors } = useAuth();
 
   const {
     register,
@@ -24,6 +24,12 @@ const Register = () => {
 
   return (
     <div className="container text-center " style={{ maxWidth: "360px" }}>
+      {registerErrors?.map((err, i) => (
+        <p className="form-control bg-danger fw-bold text-bg-primary " key={i}>
+          {err}
+        </p>
+      ))}
+
       <form onSubmit={onSubmit}>
         <h2 className="mt-5 ">Register</h2>
         <div className="mb-2 ">
@@ -65,7 +71,7 @@ const Register = () => {
           You already have an account? click <Link to="/login">Here</Link>
         </p>
         <button type="submit" className="btn btn-outline-dark mt-2">
-          Send
+          Sign Up
         </button>
       </form>
     </div>

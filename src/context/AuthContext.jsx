@@ -1,5 +1,5 @@
-import { createContext, useContext, useState } from "react";
-import { registerRequest } from "../api/axios";
+import { createContext, useContext, useEffect, useState } from "react";
+import { loginRequest, registerRequest, logoutRequest } from "../api/axios";
 
 const AuthContext = createContext();
 
@@ -12,6 +12,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setisAuthenticated] = useState(false);
+  const [errors, setErrors] = useState([]);
 
   const signUp = async (user) => {
     try {
@@ -19,11 +20,44 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data);
       setisAuthenticated(true);
     } catch (error) {
-      console.log(error);
+      setErrors(error.response.data);
     }
   };
+
+  const signIn = async (user) => {
+    try {
+      const res = await loginRequest(user);
+      //   setUser(res.data);
+      setisAuthenticated(true);
+    } catch (error) {
+      setErrors(error.response.data);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      const res = await logoutRequest();
+      //   setUser(res.data);
+      setisAuthenticated(false);
+    } catch (error) {
+      setErrors(error);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setErrors([]);
+    }, 2500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [errors]);
+
   return (
-    <AuthContext.Provider value={{ user, signUp, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{ user, signUp, isAuthenticated, errors, signIn, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
