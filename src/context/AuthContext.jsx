@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { loginRequest, registerRequest, logoutRequest } from "../api/axios";
+import Cookies from "js-cookie";
 
 const AuthContext = createContext();
 
@@ -27,7 +28,8 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (user) => {
     try {
       const res = await loginRequest(user);
-      //   setUser(res.data);
+      setUser(res.data);
+      console.log(res.data);
       setisAuthenticated(true);
     } catch (error) {
       setErrors(error.response.data);
@@ -36,8 +38,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const res = await logoutRequest();
-      //   setUser(res.data);
+      await logoutRequest();
       setisAuthenticated(false);
     } catch (error) {
       setErrors(error);
@@ -53,6 +54,11 @@ export const AuthProvider = ({ children }) => {
       clearTimeout(timer);
     };
   }, [errors]);
+
+  useEffect(() => {
+    const cookies = Cookies.get();
+    console.log(cookies);
+  }, []);
 
   return (
     <AuthContext.Provider
